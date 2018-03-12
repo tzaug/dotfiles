@@ -1,0 +1,9 @@
+# このファイルは、このプロジェクトの.gitignoreとして使われるだけでなく、
+# ~/.gitignoreとしても使用される。
+
+# ~/.gitignore用の設定
+.DS_Store
+
+# dotfiles/.gitignore用の設定
+.vim/plugged/
+
