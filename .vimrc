@@ -21,8 +21,41 @@ Plug 'prettier/vim-prettier', {
 
 Plug 'tyru/caw.vim'
 
+" 単語・選択範囲を一発で囲む
+Plug 'tpope/vim-surround'
+
+" vim-code-dark
+Plug 'tomasiser/vim-code-dark'
+
+" Solarized
+Plug 'altercation/vim-colors-solarized'
+
+" molokai
+Plug 'tomasr/molokai'
+
+" VisualStudioDark.vim
+Plug 'Heorhiy/VisualStudioDark.vim'
+
+Plug 'othree/yajs.vim'            " es6のハイライト
+Plug 'othree/es.next.syntax.vim'  " stage-0 のsyntax highlight
+Plug 'mxw/vim-jsx'                " jsxのハイライト
+
 " Initialize plugin system
 call plug#end()
+
+" vim-code-dark
+" set t_Co=256
+" set t_ut=
+" colorscheme codedark
+" syntax enable
+" set background=dark
+" colorscheme solarized
+" syntax on
+" colorscheme molokai
+" set t_Co=256
+
+" colorscheme VisualStudioDark
+
 
 " help日本語化
 set helplang=ja,en
@@ -45,7 +78,11 @@ set autoread
 set hidden
 " 入力中のコマンドをステータスに表示する
 set showcmd
-
+" indent: 字下げをバックスペースで消去可能
+" eol: 行末をバックスペースで消去可能(行を連結)
+" start: 挿入の開始点を超えてバックスペースで消去可能
+"        CTRL-WとCTRL-Uは一度スタート地点で停止する
+set backspace=indent,eol,start
 
 " 見た目系
 " 行番号を表示
@@ -125,4 +162,12 @@ augroup source-vimrc
 augroup END
 
 
+" vim-jsx用の設定
+let g:jsx_ext_required = 1        " ファイルタイプがjsxのとき読み込む．
+let g:jsx_pragma_required = 0     " @から始まるプラグマでは読み込まない．
+
+augroup Vimrc
+  autocmd!
+  autocmd BufNewFile,BufRead *.jsx set filetype=javascript.jsx
+augroup END
 
