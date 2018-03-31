@@ -133,6 +133,11 @@ set hlsearch
 " ESC連打でハイライト解除
 nmap <Esc><Esc> :nohlsearch<CR><Esc>
 
+" ノーマルモード時、タブを押すと次のタブへ、
+" シフト＋タブを押すと前のタブへ移動
+nmap <Tab>      gt
+nmap <S-Tab>    gT
+
 let $TMP_DIR='~/.vim/tmp'
 if !isdirectory($TMP_DIR)
     call mkdir($TMP_DIR, "p")
@@ -169,5 +174,6 @@ let g:jsx_pragma_required = 0     " @から始まるプラグマでは読み込�
 augroup Vimrc
   autocmd!
   autocmd BufNewFile,BufRead *.jsx set filetype=javascript.jsx
+  autocmd BufNewFile,BufRead *.{html,htm,vue*} set filetype=html
 augroup END
 
