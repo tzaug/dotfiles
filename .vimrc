@@ -40,6 +40,9 @@ Plug 'othree/yajs.vim'            " es6のハイライト
 Plug 'othree/es.next.syntax.vim'  " stage-0 のsyntax highlight
 Plug 'mxw/vim-jsx'                " jsxのハイライト
 
+" jsdoc
+Plug 'heavenshell/vim-jsdoc'
+
 " Initialize plugin system
 call plug#end()
 
