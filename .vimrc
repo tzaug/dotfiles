@@ -43,6 +43,9 @@ Plug 'mxw/vim-jsx'                " jsxのハイライト
 " jsdoc
 Plug 'heavenshell/vim-jsdoc'
 
+" Typescript
+Plug 'leafgarland/typescript-vim'
+
 " Initialize plugin system
 call plug#end()
 
