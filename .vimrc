@@ -4,13 +4,21 @@
 " - Avoid using standard Vim directory names like 'plugin'
 call plug#begin('~/.vim/plugged')
 " ここにプラグインを記述したら、.vimrcの更新をして、
+" :source ~/.vimrc
 " :PlugInstall を行うこと
-
 " Make sure you use single quotes
 Plug 'vim-jp/vimdoc-ja'
 
 " add this line to your .vimrc file
 Plug 'mattn/emmet-vim'
+
+Plug 'prabirshrestha/async.vim'
+Plug 'prabirshrestha/vim-lsp'
+Plug 'prabirshrestha/asyncomplete.vim'
+Plug 'prabirshrestha/asyncomplete-lsp.vim'
+
+" Typescript
+Plug 'leafgarland/typescript-vim'
 
 " post install (yarn install | npm install) then load plugin only for editing supported files
 Plug 'prettier/vim-prettier', {
@@ -43,8 +51,14 @@ Plug 'mxw/vim-jsx'                " jsxのハイライト
 " jsdoc
 Plug 'heavenshell/vim-jsdoc'
 
-" Typescript
-Plug 'leafgarland/typescript-vim'
+" vue
+Plug 'posva/vim-vue'
+
+" comment
+Plug 'scrooloose/nerdcommenter'
+
+" post install (yarn install | npm install)
+Plug 'prettier/vim-prettier', { 'do': 'npm install' }
 
 " Initialize plugin system
 call plug#end()
@@ -165,21 +179,60 @@ set clipboard+=unnamed
 "左右のカーソル移動で行間移動可能にする。(※要 set [no]compatible以降に記述)
 set whichwrap=b,s,h,l,<,>,[,],~
 
+" vim-jsx用の設定
+let g:jsx_ext_required = 1        " ファイルタイプがjsxのとき読み込む．
+let g:jsx_pragma_required = 0     " @から始まるプラグマでは読み込まない．
+
 " auto reload .vimrc
 augroup source-vimrc
   autocmd!
   autocmd BufWritePost *vimrc source $MYVIMRC | set foldmethod=marker
   autocmd BufWritePost *gvimrc if has('gui_running') source $MYGVIMRC
-augroup END
 
-
-" vim-jsx用の設定
-let g:jsx_ext_required = 1        " ファイルタイプがjsxのとき読み込む．
-let g:jsx_pragma_required = 0     " @から始まるプラグマでは読み込まない．
-
-augroup Vimrc
-  autocmd!
   autocmd BufNewFile,BufRead *.jsx set filetype=javascript.jsx
   autocmd BufNewFile,BufRead *.{html,htm,vue*} set filetype=html
+
+  " vueファイルでファイルの先頭からパースしてハイライトを行う設定を追記する
+  autocmd FileType vue syntax sync fromstart
 augroup END
 
+" vueファイルでのNERDCommenterでのコメントアウト機能を直す
+let g:ft = ''
+function! NERDCommenter_before()
+  if &ft == 'vue'
+    let g:ft = 'vue'
+    let stack = synstack(line('.'), col('.'))
+    if len(stack) > 0
+      let syn = synIDattr((stack)[0], 'name')
+      if len(syn) > 0
+        exe 'setf ' . substitute(tolower(syn), '^vue_', '', '')
+      endif
+    endif
+  endif
+endfunction
+function! NERDCommenter_after()
+  if g:ft == 'vue'
+    setf vue
+    let g:ft = ''
+  endif
+endfunction
+
+if executable('typescript-language-server')
+    au User lsp_setup call lsp#register_server({
+            \ 'name': 'typescript-language-server',
+            \ 'cmd': { server_info->[&shell, &shellcmdflag, 'typescript-language-server --stdio']},
+            \ 'whitelist': ['typescript', 'javascript', 'javascript.jsx']
+            \ })
+endif
+
+let g:lsp_async_completion = 1
+"let g:lsp_log_verbose = 1
+"let g:lsp_log_file = expand("~/vim-lsp.log")
+
+autocmd FileType typescript setlocal omnifunc=lsp#complete
+
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<cr>"
+imap <c-space> <Plug>(asyncomplete_force_refresh)
+autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
